@@ -2,10 +2,6 @@
 ///
 /// Tauri의 with_webview → ICoreWebView2Controller → ICoreWebView2
 /// → ICoreWebView2_7::PrintToPdf(path, settings, handler)
-///
-/// webview2-com 크레이트가 COM 인터페이스 바인딩을 제공한다.
-/// handler는 ICoreWebView2PrintToPdfCompletedHandler 구현체를 통해
-/// 완료 여부를 oneshot 채널로 전달한다.
 
 use tauri::WebviewWindow;
 use tokio::sync::oneshot;
@@ -15,8 +11,8 @@ use webview2_com::Microsoft::Web::WebView2::Win32::{
     ICoreWebView2PrintToPdfCompletedHandler,
     ICoreWebView2PrintToPdfCompletedHandler_Impl,
 };
-use windows::core::{HSTRING, Result as WinResult, BOOL};
-use windows_core::implement;
+// windows_core를 직접 사용: #[implement] 매크로와 타입이 같은 crate에서 나와야 함
+use windows_core::{implement, Interface, HSTRING, BOOL, HRESULT, Result as WinResult};
 
 type TxSlot = Arc<Mutex<Option<oneshot::Sender<Result<(), String>>>>>;
 
@@ -26,14 +22,13 @@ fn send_err(slot: &TxSlot, msg: String) {
     }
 }
 
-// #[implement] 매크로가 안정적으로 동작하려면 모듈 최상위에 struct를 정의해야 한다
 #[implement(ICoreWebView2PrintToPdfCompletedHandler)]
 struct PdfHandler {
     tx: TxSlot,
 }
 
 impl ICoreWebView2PrintToPdfCompletedHandler_Impl for PdfHandler_Impl {
-    fn Invoke(&self, error_code: windows::core::HRESULT, is_successful: BOOL) -> WinResult<()> {
+    fn Invoke(&self, error_code: HRESULT, is_successful: BOOL) -> WinResult<()> {
         let result = if error_code.is_ok() && is_successful.as_bool() {
             Ok(())
         } else if error_code.is_err() {
@@ -65,9 +60,6 @@ pub async fn create_pdf(win: &WebviewWindow, output_path: &str) -> Result<(), St
         .map_err(|_| "PDF 채널 수신 오류".to_string())?
 }
 
-/// webview2-com을 통해 ICoreWebView2_7::PrintToPdf 호출
-///
-/// 모든 에러 경로(설정 실패 포함)가 tx_slot 채널을 통해 전달된다.
 fn invoke_print_to_pdf(
     webview: tauri::webview::PlatformWebview,
     output_path: String,
@@ -86,15 +78,10 @@ fn invoke_print_to_pdf(
     };
 
     let path_hstr = HSTRING::from(output_path.as_str());
-
-    // PrintToPdf 호출 에러를 위해 Arc를 하나 더 보관
-    // (PdfHandler로 tx_slot을 move한 뒤에도 이 clone으로 에러 전송 가능)
     let fallback = tx_slot.clone();
-
     let handler: ICoreWebView2PrintToPdfCompletedHandler = PdfHandler { tx: tx_slot }.into();
 
     if let Err(e) = unsafe { core7.PrintToPdf(&path_hstr, None, &handler) } {
-        // Invoke가 호출되지 않으므로 fallback으로 에러를 직접 전송
         send_err(&fallback, format!("PrintToPdf 호출 실패: {e}"));
     }
 }
