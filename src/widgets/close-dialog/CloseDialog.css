@@ -1,0 +1,133 @@
+.cd-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.cd-modal {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px 28px 24px;
+  width: 380px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.cd-icon { font-size: 36px; line-height: 1; }
+
+.cd-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-heading);
+  text-align: center;
+}
+
+.cd-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+.cd-path {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  word-break: break-all;
+  width: 100%;
+  text-align: left;
+}
+
+.cd-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.cd-actions-col {
+  flex-direction: column;
+}
+
+.cd-btn {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.12s, border-color 0.12s, opacity 0.12s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.cd-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cd-btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.cd-btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+.cd-btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+.cd-btn-secondary:hover:not(:disabled) { background: var(--bg-hover); }
+
+.cd-btn-danger {
+  background: transparent;
+  color: #ef4444;
+  border-color: #fca5a5;
+}
+.cd-btn-danger:hover:not(:disabled) { background: #fef2f2; border-color: #ef4444; }
+
+[data-theme="dark"] .cd-btn-danger:hover:not(:disabled) {
+  background: #3b0e0e;
+  border-color: #ef4444;
+}
+
+.cd-btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+}
+.cd-btn-ghost:hover:not(:disabled) { background: var(--bg-hover); color: var(--text-primary); }
+
+.cd-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.cd-dirty-list {
+  width: 100%;
+  margin: 0 0 4px;
+  padding: 8px 12px 8px 24px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  list-style: disc;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}

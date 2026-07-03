@@ -1,0 +1,154 @@
+/* ── Image Tools Overlay ───────────────────────────────────────── */
+.img-tool-overlay {
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.img-tool-border {
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(59, 130, 246, 0.7);
+  border-radius: 3px;
+  pointer-events: none;
+}
+.img-tool-border--resizing {
+  border-style: dashed;
+}
+
+/* 코너 핸들 */
+.img-tool-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #3b82f6;
+  border: 2px solid #fff;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+  pointer-events: auto;
+}
+.img-tool-handle--nw { top: -5px;    left: -5px;    cursor: nwse-resize; }
+.img-tool-handle--ne { top: -5px;    right: -5px;   cursor: nesw-resize; }
+.img-tool-handle--sw { bottom: -5px; left: -5px;    cursor: nesw-resize; }
+.img-tool-handle--se { bottom: -5px; right: -5px;   cursor: nwse-resize; }
+
+.img-tool-resize-preview {
+  position: absolute;
+  inset: 0;
+  background: rgba(59, 130, 246, 0.12);
+  pointer-events: none;
+}
+
+/* 액션 버튼 툴바 */
+.img-tool-actions {
+  position: absolute;
+  top: -36px;
+  left: 0;
+  display: flex;
+  gap: 4px;
+  background: var(--bg-toolbar, #f0f0f0);
+  border: 1px solid var(--border, #d0d0d0);
+  border-radius: 6px;
+  padding: 3px 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  white-space: nowrap;
+}
+
+.img-tool-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-normal, #333);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.img-tool-action-btn:hover {
+  background: var(--bg-hover, rgba(0,0,0,.07));
+}
+
+/* ── Image Crop Modal ───────────────────────────────────────────── */
+.img-tool-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.img-tool-modal {
+  background: var(--bg-sidebar, #fff);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.3);
+  display: flex;
+  flex-direction: column;
+  max-width: 80vw;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.img-tool-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border, #e0e0e0);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-normal, #333);
+}
+
+.img-tool-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-muted, #888);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.img-tool-modal-close:hover { background: var(--bg-hover, rgba(0,0,0,.07)); }
+
+.img-tool-modal-body {
+  overflow: auto;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.img-tool-modal-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border, #e0e0e0);
+}
+
+.img-tool-btn-primary {
+  padding: 6px 16px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.img-tool-btn-primary:hover:not(:disabled) { background: #2563eb; }
+.img-tool-btn-primary:disabled { opacity: 0.5; cursor: default; }
+
+.img-tool-btn-secondary {
+  padding: 6px 16px;
+  background: var(--bg-hover, rgba(0,0,0,.07));
+  color: var(--text-normal, #333);
+  border: 1px solid var(--border, #d0d0d0);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.img-tool-btn-secondary:hover:not(:disabled) { background: var(--bg-active, rgba(0,0,0,.12)); }

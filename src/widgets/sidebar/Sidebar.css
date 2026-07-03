@@ -1,0 +1,317 @@
+#sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* 열고 닫을 때 부드러운 슬라이드 */
+  transition:
+    width 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.22s;
+}
+
+/* 닫힌 상태 */
+#sidebar.sidebar-closed {
+  width: 0;
+  border-right-color: transparent;
+  pointer-events: none;
+}
+
+/* ── 사이드바 헤더 ─────────────────────────────────────── */
+.sb-header {
+  display: flex;
+  justify-content: flex-start;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.sb-collapse-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 3px;
+  border-radius: 4px;
+  transition: background 0.1s, color 0.1s;
+}
+.sb-collapse-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+/* ── 아코디언 섹션 ─────────────────────────────────────── */
+.sb-section { border-bottom: 1px solid var(--border); }
+
+.sb-section-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  user-select: none;
+  transition: background 0.1s, color 0.1s;
+}
+.sb-section-header:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.sb-chevron { font-size: 9px; width: 10px; flex-shrink: 0; }
+
+.sb-folder-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 3px;
+  line-height: 1;
+}
+.sb-folder-btn:hover { background: var(--bg-active); color: var(--text-primary); }
+
+.sb-section-body { overflow: hidden; }
+
+.sb-empty-small {
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.sb-open-folder-btn {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 6px 0;
+  font-size: 12px;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background 0.1s, color 0.1s;
+}
+.sb-open-folder-btn:hover { background: var(--bg-active); color: var(--text-active); }
+
+/* ── 파일 트리 ─────────────────────────────────────────── */
+#file-tree { padding: 2px 0; }
+
+.tree-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  border-radius: 4px;
+  margin: 1px 4px;
+  user-select: none;
+}
+.tree-row:hover  { background: var(--bg-hover); }
+.tree-row.active { background: var(--bg-active); color: var(--text-active); }
+.tree-icon { font-size: 11px; width: 14px; flex-shrink: 0; color: var(--text-muted); }
+.tree-name { overflow: hidden; text-overflow: ellipsis; }
+
+/* ── 최근 파일 ─────────────────────────────────────────── */
+.recent-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 12px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  color: var(--text-primary);
+  transition: background 0.1s;
+}
+.recent-item:last-child { border-bottom: none; }
+.recent-item:hover  { background: var(--bg-hover); }
+.recent-item.active { background: var(--bg-active); }
+/* savedRecentExtra 항목 — 행 레이아웃 (삭제 버튼 포함) */
+.recent-item-row {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0;
+  padding: 0 !important;
+}
+.recent-item-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-primary);
+}
+.recent-remove-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 100%;
+  min-height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.1s, color 0.1s, background 0.1s;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+.recent-item-row:hover .recent-remove-btn { opacity: 1; }
+.recent-remove-btn:hover { color: var(--text-primary); background: var(--bg-hover); }
+
+.recent-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+}
+.recent-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+.recent-path { font-size: 10px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+.recent-saved-at { font-size: 10px; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; opacity: 0.75; }
+
+/* 사라진 파일 — 취소선 + 흐리게 */
+.recent-item.missing { opacity: 0.5; }
+.recent-item.missing .recent-name { text-decoration: line-through; }
+.recent-item.missing .recent-path { text-decoration: line-through; }
+
+/* 미저장 표시 — 오른쪽 작은 컬러 점 */
+.recent-dirty {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── 사이드바 재오픈 버튼 — 마우스가 가까이 올 때만 표시 ────── */
+#sidebar-reopen-btn {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 48px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 0;
+  overflow: hidden;
+  /* 평소엔 투명 — 호버 존은 유지되어 마우스가 왼쪽 가장자리에 오면 반응 */
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, color 0.15s, width 0.15s;
+}
+#sidebar-reopen-btn:hover {
+  opacity: 1;
+  background: var(--bg-hover);
+  color: var(--accent);
+  width: 28px;
+}
+
+/* ── 폴더 섹션 아이콘 버튼 ──────────────────────────────────── */
+.sb-folder-action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  padding: 2px 3px;
+  border-radius: 3px;
+  line-height: 1;
+  margin-left: 2px;
+}
+.sb-folder-action-btn:hover { background: var(--bg-active); color: var(--accent); }
+
+.sb-folder-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* (구분선/closed 스타일 제거 — 통합 목록으로 변경) */
+
+/* ── 인라인 파일/폴더 생성 입력 ─────────────────────────────── */
+.tree-creating {
+  background: var(--bg-active);
+}
+.tree-name-input {
+  flex: 1;
+  background: var(--bg-primary);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  padding: 1px 5px;
+  outline: none;
+  min-width: 0;
+}
+.tree-name-input:focus {
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* ── 컨텍스트 메뉴 ──────────────────────────────────────────── */
+.ctx-menu {
+  position: fixed;
+  z-index: 1000;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  padding: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  min-width: 140px;
+}
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  padding: 6px 10px;
+  border-radius: 4px;
+  text-align: left;
+  transition: background 0.1s;
+}
+.ctx-item:hover { background: var(--bg-hover); }
+.ctx-item-icon { font-size: 14px; color: var(--text-muted); }

@@ -1,0 +1,91 @@
+/* ── 토스트 컨테이너 ─────────────────────────────────────────────── */
+#toast-container {
+  position: fixed;
+  bottom: 32px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  max-width: 360px;
+  width: 100%;
+}
+
+/* ── 개별 토스트 ─────────────────────────────────────────────────── */
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  pointer-events: all;
+  animation: toast-in 0.18s ease;
+  font-size: 13px;
+  line-height: 1.5;
+
+  /* 테마 공통 */
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── 레벨별 색상 ─────────────────────────────────────────────────── */
+.toast-error  { border-left: 3px solid #ef4444; }
+.toast-warn   { border-left: 3px solid #f59e0b; }
+.toast-info   { border-left: 3px solid #3b82f6; }
+.toast-success { border-left: 3px solid #10b981; }
+
+.toast-error  .toast-icon { color: #ef4444; }
+.toast-warn   .toast-icon { color: #f59e0b; }
+.toast-info   .toast-icon { color: #3b82f6; }
+.toast-success .toast-icon { color: #10b981; }
+
+/* ── 아이콘 ──────────────────────────────────────────────────────── */
+.toast-icon {
+  font-size: 18px !important;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── 본문 ────────────────────────────────────────────────────────── */
+.toast-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toast-title {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.toast-detail {
+  font-size: 12px;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+/* ── 닫기 버튼 ───────────────────────────────────────────────────── */
+.toast-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.toast-close:hover { color: var(--text-primary); }

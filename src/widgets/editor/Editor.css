@@ -1,0 +1,934 @@
+/* ════════════════════════════════════════════════════════════════
+   Crepe 내부 CSS 변수를 우리 디자인 토큰으로 연결
+   — Crepe의 툴바, 링크 tooltip, 코드블록, 테이블 등 모든
+     내장 컴포넌트가 이 변수를 참조하므로 여기서 한 번에 통제
+   ════════════════════════════════════════════════════════════════ */
+.milkdown {
+  --crepe-color-background:         var(--bg-primary);
+  --crepe-color-on-background:      var(--text-primary);
+  --crepe-color-surface:            var(--bg-secondary);
+  --crepe-color-surface-low:        var(--bg-hover);
+  --crepe-color-on-surface:         var(--text-primary);
+  --crepe-color-on-surface-variant: var(--text-secondary);
+  --crepe-color-outline:            var(--border-strong);
+  --crepe-color-primary:            var(--accent);
+  --crepe-color-secondary:          var(--bg-active);
+  --crepe-color-on-secondary:       var(--text-active);
+  --crepe-color-hover:              var(--bg-hover);
+  --crepe-color-selected:           var(--selection-bg);
+  --crepe-color-inline-code:        var(--code-text);
+  --crepe-color-inline-area:        var(--code-bg);
+  --crepe-color-error:              #ef4444;
+
+  --crepe-font-default: var(--font-editor);
+  --crepe-font-title:   var(--font-editor);
+  --crepe-font-code:    var(--font-mono);
+
+  --crepe-shadow-1: 0 2px 8px rgba(0,0,0,0.10);
+  --crepe-shadow-2: 0 4px 16px rgba(0,0,0,0.14);
+}
+
+/* 다크 테마 변수 덮어쓰기 */
+[data-theme="dark"] .milkdown {
+  --crepe-shadow-1: 0 2px 8px rgba(0,0,0,0.35);
+  --crepe-shadow-2: 0 4px 16px rgba(0,0,0,0.50);
+
+  /* 플로팅 메뉴(블록 추가/이동, 언어 선택, 링크 툴팁 등) 배경을
+     에디터 배경(#18181b)보다 충분히 밝게 해서 구분되게 함 */
+  --crepe-color-surface:     #2e2e34;
+  --crepe-color-surface-low: #363640;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   에디터 컨테이너
+   — #milkdown-container: flex child, positioning context
+   — .milkdown: absolute fill → 창 크기 변경에 즉시 반응
+   ════════════════════════════════════════════════════════════════ */
+#milkdown-container {
+  flex: 1;
+  min-height: 0;
+  position: relative; /* .milkdown의 containing block */
+}
+
+.milkdown {
+  position: absolute !important; /* Crepe reset의 position:relative 덮어씀 */
+  inset: 0;
+  overflow-y: auto;              /* 스크롤은 여기서 처리 */
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+/* ※ .milkdown > * 규칙 제거:
+      position:absolute 오버레이(.milkdown-toolbar 등)에
+      flex-direction:column이 적용되어 버튼 레이아웃이 깨지던 문제 수정 */
+
+/* ════════════════════════════════════════════════════════════════
+   편집 영역 레이아웃
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror {
+  /* max-width + margin:auto 대신 padding으로 콘텐츠 폭 제한.
+     → .ProseMirror가 .milkdown 전체를 채워 블록 핸들 드롭 영역이
+       .ProseMirror 밖으로 벗어나지 않도록 한다. */
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  /* 화면이 넓으면 좌우 padding이 늘어나 콘텐츠 최대 720px 유지 */
+  padding: 56px clamp(48px, calc((100% - 720px) / 2), 9999px) 140px !important;
+  min-height: 100%;    /* .milkdown(absolute, 정확한 높이) 기준으로 채움 */
+  outline: none;
+  font-size: var(--font-size-base) !important;
+  line-height: var(--line-height-body) !important;
+  font-family: var(--font-editor) !important;
+  color: var(--text-primary) !important;
+  caret-color: var(--text-primary);
+  background: transparent;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   헤딩 — Crepe reset.css 보다 높은 우선순위로 덮어씀
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror h1,
+.milkdown .ProseMirror h2,
+.milkdown .ProseMirror h3,
+.milkdown .ProseMirror h4,
+.milkdown .ProseMirror h5,
+.milkdown .ProseMirror h6 {
+  font-family: var(--font-editor) !important;
+  color: var(--text-heading);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: var(--line-height-heading);
+  margin-top: 1.6em;
+  margin-bottom: 0.5em;
+  padding: 0;
+}
+
+.milkdown .ProseMirror h1 {
+  font-size: 2em !important;
+  font-weight: 800;
+  border-bottom: 2px solid var(--border-strong);
+  padding-bottom: 0.3em;
+  margin-top: 1em;
+}
+
+.milkdown .ProseMirror h2 {
+  font-size: 1.6em !important;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.2em;
+}
+
+.milkdown .ProseMirror h3 { font-size: 1.3em !important; }
+.milkdown .ProseMirror h4 { font-size: 1.1em !important; font-weight: 600; }
+.milkdown .ProseMirror h5 { font-size: 1em !important;   font-weight: 600; color: var(--text-secondary); }
+.milkdown .ProseMirror h6 { font-size: 0.9em !important; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+.milkdown .ProseMirror > :first-child { margin-top: 0; }
+
+/* ════════════════════════════════════════════════════════════════
+   단락
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror p {
+  font-size: var(--font-size-base) !important;
+  line-height: var(--line-height-body) !important;
+  margin: 0 0 0.9em;
+  padding: 0;
+}
+
+.milkdown .ProseMirror p:last-child { margin-bottom: 0; }
+
+/* ════════════════════════════════════════════════════════════════
+   인라인 스타일
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror strong,
+.milkdown .ProseMirror b { font-weight: 700; color: var(--text-strong); }
+
+.milkdown .ProseMirror em,
+.milkdown .ProseMirror i  { font-style: italic; }
+
+.milkdown .ProseMirror s,
+.milkdown .ProseMirror del { text-decoration: line-through; color: var(--text-secondary); opacity: 0.7; }
+
+/* ════════════════════════════════════════════════════════════════
+   링크 — Crepe는 --crepe-color-primary 로 색상 지정하므로
+   그 변수를 덮어쓴 것만으로 충분하지만, 하단 줄은 따로 추가
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror a {
+  color: var(--link) !important;
+  text-decoration: none !important;
+  border-bottom: 1px solid var(--link-underline);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.milkdown .ProseMirror a:hover {
+  color: var(--link-hover) !important;
+  border-bottom-color: var(--link-hover);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   인라인 코드 — Crepe가 --crepe-color-inline-code 사용
+   (위에서 이미 var(--code-text)로 연결했으므로 배경만 추가)
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror code:not(pre code) {
+  display: inline !important;       /* inline-block이면 ArrowDown 커서 계산 오류 */
+  vertical-align: baseline !important;
+  line-height: inherit !important;  /* 라인 높이 통일 → 수직 커서 이동 정상화 */
+  border: 1px solid var(--code-border);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   코드 블록 (CodeMirror 미사용 시 fallback)
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror pre {
+  background: var(--code-block-bg) !important;
+  border: 1px solid var(--code-block-border);
+  border-radius: 8px;
+  margin: 1.2em 0;
+  overflow-x: auto;
+}
+
+.milkdown .ProseMirror pre code {
+  font-family: var(--font-mono) !important;
+  font-size: 0.875em;
+  line-height: 1.65;
+  color: var(--code-block-text);
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   인용문
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror blockquote {
+  border-left: 3px solid var(--accent) !important;
+  padding: 10px 20px !important;
+  padding-left: 20px !important;
+  margin: 1.2em 0;
+  color: var(--text-primary);
+  background: var(--blockquote-bg);
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
+}
+
+/* Crepe reset.css 의 ::before 가상요소 제거 */
+.milkdown .ProseMirror blockquote::before { display: none; }
+
+.milkdown .ProseMirror blockquote p { margin-bottom: 0; }
+
+/* ════════════════════════════════════════════════════════════════
+   목록 — list-style: none 이 핵심
+   Crepe의 listItem 기능이 .label-wrapper .label 로
+   자체 불릿/번호를 렌더링하므로 브라우저 기본 마커 제거
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror ul,
+.milkdown .ProseMirror ol {
+  list-style: none !important;
+  padding: 0;
+  margin: 0.5em 0 0.9em;
+}
+
+.milkdown .ProseMirror li {
+  margin: 3px 0;
+  line-height: var(--line-height-body);
+}
+
+/* 중첩 목록 */
+.milkdown .ProseMirror li > ul,
+.milkdown .ProseMirror li > ol {
+  margin: 2px 0;
+}
+
+/* 체크박스 */
+.milkdown .ProseMirror li[data-checked="true"]  { color: var(--text-muted); text-decoration: line-through; }
+.milkdown .ProseMirror li[data-checked="false"] { color: var(--text-primary); }
+
+/* ════════════════════════════════════════════════════════════════
+   테이블
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.2em 0;
+  font-size: 0.93em;
+  border: none;
+}
+
+.milkdown .ProseMirror th {
+  background: transparent;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 9px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--border-strong);
+}
+
+.milkdown .ProseMirror td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border-strong);
+  color: var(--text-primary);
+}
+
+.milkdown .ProseMirror tr:last-child td { border-bottom: none; }
+.milkdown .ProseMirror tbody tr:hover td { background: var(--bg-hover); }
+
+/* ── Crepe 테이블 블록 테두리 진하게 ── */
+.milkdown .milkdown-table-block th,
+.milkdown .milkdown-table-block td {
+  border: 1px solid var(--border-strong) !important;
+}
+
+/* ── 행 추가 버튼: 좌측 정렬 ── */
+.milkdown .milkdown-table-block .line-handle[data-role='x-line-drag-handle'] .add-button {
+  left: 6px !important;
+  transform: translateY(-50%) !important;
+}
+
+/* ── 열 추가 버튼: 상단 정렬 ── */
+.milkdown .milkdown-table-block .line-handle[data-role='y-line-drag-handle'] .add-button {
+  top: 6px !important;
+  transform: translateX(-50%) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   수평선
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror hr {
+  border: none !important;
+  border-top: 2px solid var(--border) !important;
+  margin: 2.5em 0 !important;
+  height: auto !important;
+  background: none !important;
+  padding: 0 !important;
+  opacity: 0.6;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   이미지
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror img {
+  max-width: 100%;
+  border-radius: 6px;
+  display: block;
+  margin: 0.8em 0;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   수식 (KaTeX)
+   — 블록 수식: 담백한 회색 배경 (bg-secondary)
+   — 인라인 수식: 배경 없음, 텍스트 색 그대로
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .katex-display {
+  margin: 1.4em 0;
+  overflow-x: auto;
+  overflow-y: clip;   /* 세로 스크롤바 방지 */
+  max-width: 100%;
+  padding: 16px 20px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
+/* KaTeX 내부 렌더 영역도 컨테이너 넘침 차단 */
+.milkdown .katex-display > .katex {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: clip;
+}
+
+.milkdown .katex { font-size: 1.05em; }
+
+/* 인라인 수식: 연한 로즈 배경 + 빨간 계열 secondary 색 */
+.milkdown span[data-type='math_inline'] {
+  background: rgba(225, 29, 72, 0.07);
+  color: #be123c;
+  border-radius: 4px;
+  padding: 1px 3px;
+}
+/* KaTeX 내부 모든 요소(SVG 루트 기호 포함) 색상 통일 */
+.milkdown span[data-type='math_inline'] .katex,
+.milkdown span[data-type='math_inline'] .katex * {
+  color: #be123c !important;
+  border-color: #be123c !important;
+}
+.milkdown span[data-type='math_inline'] .katex svg,
+.milkdown span[data-type='math_inline'] .katex svg path {
+  fill: #be123c !important;
+  stroke: #be123c !important;
+}
+
+[data-theme="dark"] .milkdown span[data-type='math_inline'] {
+  background: rgba(251, 113, 133, 0.12);
+  color: #fb7185;
+}
+[data-theme="dark"] .milkdown span[data-type='math_inline'] .katex,
+[data-theme="dark"] .milkdown span[data-type='math_inline'] .katex * {
+  color: #fb7185 !important;
+  border-color: #fb7185 !important;
+}
+[data-theme="dark"] .milkdown span[data-type='math_inline'] .katex svg,
+[data-theme="dark"] .milkdown span[data-type='math_inline'] .katex svg path {
+  fill: #fb7185 !important;
+  stroke: #fb7185 !important;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   선택 / 포커스
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror-focused { outline: none; }
+
+.milkdown .ProseMirror ::selection { background: var(--selection-bg); }
+
+/* ════════════════════════════════════════════════════════════════
+   플레이스홀더
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ── Crepe 컴포넌트 오버라이드 ──
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── 목록 레이아웃 픽스 ─────────────────────────────────────────
+   Crepe listItem: label-wrapper(불릿/번호)과 children(내용)이
+   flex row로 나란히 배치되어야 함.
+   DOM 구조에 따라 .list-item이 직접 자식이거나 li 자체일 수 있어
+   양쪽 다 커버.
+   ─────────────────────────────────────────────────────────────── */
+.milkdown .milkdown-list-item-block .list-item,
+.milkdown li.milkdown-list-item-block {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.milkdown .milkdown-list-item-block .children {
+  flex: 1;
+  min-width: 0;
+}
+
+/* label-wrapper: 불릿/번호 영역 고정 크기 */
+.milkdown .milkdown-list-item-block .label-wrapper {
+  flex-shrink: 0 !important;
+  width: 1.4em !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: flex-end !important;
+  padding-top: 0.15em;
+  color: var(--text-muted);
+}
+
+.milkdown .milkdown-list-item-block .label {
+  height: auto !important;
+  width: auto !important;
+  padding: 0 !important;
+  line-height: var(--line-height-body);
+  font-size: 0.95em;
+  color: var(--text-muted);
+}
+
+/* 중첩 목록 들여쓰기 */
+.milkdown .milkdown-list-item-block .children > ul,
+.milkdown .milkdown-list-item-block .children > ol {
+  padding-left: 0.8em;
+}
+
+/* ── 인라인 수식 ────────────────────────────────────────────────
+   span[data-type='math_inline'] 안에
+   ProseMirror raw 텍스트 노드가 보이지 않도록 숨김.
+   KaTeX 렌더링(.katex)만 표시.
+   ─────────────────────────────────────────────────────────────── */
+.milkdown span[data-type='math_inline'] {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* ProseMirror가 삽입하는 raw content node 숨기기 */
+.milkdown span[data-type='math_inline'] > span:not(.katex):not(.katex-display):not(.milkdown-latex-inline-edit) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ── 인라인 수식 편집 팝업 ──────────────────────────────────────
+   클릭 시 나타나는 인라인 LaTeX 편집 팝업 스타일
+   ─────────────────────────────────────────────────────────────── */
+.milkdown .milkdown-latex-inline-edit {
+  background: var(--bg-primary) !important;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+  padding: 8px 12px !important;
+  z-index: 100;
+}
+
+/* 체크(확인) 버튼 숨김 — Enter로 확정 가능하므로 불필요 */
+.milkdown .milkdown-latex-inline-edit button {
+  display: none !important;
+}
+
+.milkdown .milkdown-latex-inline-edit .ProseMirror {
+  font-family: var(--font-mono) !important;
+  font-size: 13px;
+  color: var(--code-text) !important;
+  background: var(--code-bg);
+  border-radius: 4px;
+  padding: 4px 8px !important;
+  min-width: 180px;
+}
+
+/* ── 블록 수식 (LaTeX 코드블록) ─────────────────────────────────
+   레이아웃: [미리보기(위)] + [코드 에디터(아래, 클릭 시 펼침)]
+   Crepe 기본 툴바(Copy/Hide 버튼)는 아이콘이 깨지므로 완전 숨김
+   ─────────────────────────────────────────────────────────────── */
+
+.milkdown .milkdown-code-block:has(.preview-panel) {
+  background: var(--bg-secondary) !important; /* 블록 기본 회색 배경 */
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 !important;
+  margin: 1.2em 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;  /* 세로 스크롤 방지: overflow-y 는 건드리지 않음 */
+}
+
+/* Crepe 내장 툴바 완전 숨김 (Copy/Hide 아이콘 깨짐) */
+.milkdown .milkdown-code-block:has(.preview-panel) .tools {
+  display: none !important;
+}
+
+/* 미리보기 — 위에 배치, 상단 패딩 제거 */
+.milkdown .milkdown-code-block:has(.preview-panel) .preview-panel {
+  order: 0;
+  padding: 16px 24px;
+  width: 100%;
+  min-width: 0;
+}
+
+.milkdown .milkdown-code-block:has(.preview-panel) .preview {
+  text-align: center;
+  overflow-x: auto;    /* 수식이 넓으면 가로 스크롤 */
+  max-width: 100%;
+}
+
+/* KaTeX 렌더 결과: 배경 없이 컨테이너 색상 그대로 사용 */
+.milkdown .milkdown-code-block:has(.preview-panel) .katex-display {
+  overflow-x: auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;  /* 블록 컨테이너 배경 그대로 */
+  border-radius: 0;
+}
+
+.milkdown .milkdown-code-block:has(.preview-panel) .katex-display > .katex {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.milkdown .milkdown-code-block:has(.preview-panel) .preview-label,
+.milkdown .milkdown-code-block:has(.preview-panel) .preview-divider {
+  display: none;
+}
+
+/* 코드 에디터 — 아래에 배치, 기본 숨김 */
+.milkdown .milkdown-code-block:has(.preview-panel) .cm-editor {
+  order: 1;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 선택/포커스 시 코드 에디터 펼침 */
+.milkdown .milkdown-code-block:has(.preview-panel).selected .cm-editor,
+.milkdown .milkdown-code-block:has(.preview-panel):focus-within .cm-editor {
+  max-height: 300px;
+  background: var(--bg-secondary) !important;
+  border-top: 1px solid var(--border);
+  padding: 8px 0;
+}
+
+/* 수식 블록 편집기 — 줄 번호 거터 숨김 */
+.milkdown .milkdown-code-block:has(.preview-panel) .cm-gutters {
+  display: none !important;
+}
+.milkdown .milkdown-code-block:has(.preview-panel) .cm-content {
+  padding-left: 16px !important;
+}
+
+/* 선택 시 테두리 강조 */
+.milkdown .milkdown-code-block:has(.preview-panel).selected {
+  border-color: var(--accent);
+}
+
+/* 편집 가능 힌트: 미리보기 아래 작은 텍스트 (선택 시) */
+.milkdown .milkdown-code-block:has(.preview-panel).selected .preview-panel::after {
+  content: "클릭하여 편집";
+  display: block;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* ── 코드블록 (일반) ─────────────────────────────────────────────
+   언어 버튼/복사 버튼 hover 표시는 Crepe 기본 동작 유지
+   배경색만 우리 토큰으로
+   ─────────────────────────────────────────────────────────────── */
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) {
+  background: var(--code-block-bg) !important;
+  border-radius: 8px;
+  margin: 1.2em 0;
+}
+
+/* ── CodeMirror 활성줄 하이라이트 — 비활성화 ──────────────────── */
+.milkdown .milkdown-code-block .cm-activeLine,
+.milkdown .milkdown-code-block .cm-activeLineGutter {
+  background-color: transparent !important;
+}
+
+
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .cm-editor {
+  background: var(--code-block-bg) !important;
+}
+
+/* 거터 — 다크: One Dark 팔레트 / 라이트: GitHub Light 팔레트 */
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .cm-gutters {
+  background: var(--code-block-bg) !important;
+  border-right: 1px solid var(--code-block-border) !important;
+  color: #636d83 !important; /* One Dark gutter number color */
+}
+
+/* ── 언어 선택 드롭다운 높이 축소 ──────────────────────────────── */
+.milkdown .milkdown-code-block .language-list {
+  height: 220px !important;
+}
+
+/* ── 언어 버튼 포커스 outline 제거 (겹침 방지) ─────────────────── */
+.milkdown .milkdown-code-block .language-button:focus,
+.milkdown .milkdown-code-block .language-button:focus-visible {
+  outline: none !important;
+}
+.milkdown .milkdown-code-block .search-box:has(input:focus) {
+  outline: 1px solid var(--accent) !important;
+}
+
+/* ── tools 행 배경 통일 + 언어/카피 항상 표시 ─────────────────── */
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .tools {
+  background: transparent !important;
+}
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .tools .tools-button-group button {
+  background: transparent !important;
+}
+/* Crepe는 기본 opacity:0 → hover에서 1로. 항상 표시되도록 override */
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .language-button,
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .tools-button-group > button {
+  opacity: 1 !important;
+}
+
+/* ── 언어 선택 버튼 ────────────────────────────────────────────────
+   평소: 텍스트만 (버튼 느낌 없음), chevron 숨김
+   호버: 배경 + 테두리 + chevron 표시
+   ─────────────────────────────────────────────────────────────── */
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .language-button {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--text-muted) !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.02em !important;
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+  transition: background 0.15s, border-color 0.15s, color 0.15s !important;
+  gap: 2px !important;
+}
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .language-button .expand-icon {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .language-button:hover {
+  background: var(--bg-hover) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .language-button:hover .expand-icon {
+  opacity: 1;
+}
+
+/* ── 카피 버튼 ─────────────────────────────────────────────────────
+   평소: 아이콘만 (텍스트 font-size:0 으로 숨김), 배경 없음
+   호버: 아이콘 + "Copy" 텍스트, 배경 나타남
+   ─────────────────────────────────────────────────────────────── */
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .copy-button {
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  border: none !important;
+  padding: 3px 5px !important;
+  border-radius: 4px !important;
+  font-size: 0 !important;         /* 텍스트 노드 숨김 */
+  transition: background 0.15s, color 0.15s, font-size 0.15s, padding 0.15s !important;
+  white-space: nowrap !important;
+}
+/* 아이콘 span — 부모 font-size:0 의 영향 없이 SVG 크기 유지 */
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .copy-button > span {
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+}
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .copy-button:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+  font-size: 11.5px !important;    /* 호버 시 텍스트 표시 */
+  padding: 3px 7px !important;
+  gap: 4px !important;
+}
+
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .cm-content,
+.milkdown .milkdown-code-block:not(:has(.preview-panel)) .cm-line {
+  color: var(--code-block-text) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 0.875em;
+  line-height: 1.65;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CodeMirror Light Theme (data-theme="light")
+   oneDark 테마의 어두운 배경/색상을 밝은 테마로 덮어씀
+   ════════════════════════════════════════════════════════════════ */
+[data-theme="light"] .milkdown .milkdown-code-block .cm-editor {
+  background: var(--code-block-bg) !important;
+  color: var(--code-block-text) !important;
+}
+[data-theme="light"] .milkdown .milkdown-code-block .cm-content,
+[data-theme="light"] .milkdown .milkdown-code-block .cm-line {
+  color: var(--code-block-text) !important;
+}
+[data-theme="light"] .milkdown .milkdown-code-block .cm-gutters {
+  background: var(--code-block-bg) !important;
+  border-right: 1px solid var(--code-block-border) !important;
+  color: #8b949e !important; /* GitHub Light gutter number color */
+}
+[data-theme="light"] .milkdown .milkdown-code-block .cm-selectionBackground,
+[data-theme="light"] .milkdown .milkdown-code-block .cm-editor.cm-focused .cm-selectionBackground {
+  background: rgba(0, 100, 200, 0.15) !important;
+}
+[data-theme="light"] .milkdown .milkdown-code-block .cm-cursor {
+  border-left-color: #24292e !important;
+}
+
+/* 구문 강조 — GitHub Light 스타일 */
+[data-theme="light"] .milkdown .milkdown-code-block .tok-keyword    { color: #d73a49 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-string     { color: #032f62 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-string2    { color: #032f62 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-number     { color: #005cc5 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-comment    { color: #6a737d !important; font-style: italic; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-function   { color: #6f42c1 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-operator   { color: #d73a49 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-punctuation{ color: #24292e !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-typeName   { color: #6f42c1 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-className  { color: #6f42c1 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-variableName{ color: #e36209 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-propertyName{ color: #005cc5 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-atom       { color: #005cc5 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-bool       { color: #005cc5 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-url        { color: #032f62 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-tag        { color: #22863a !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-attribute  { color: #6f42c1 !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-meta       { color: #6a737d !important; }
+[data-theme="light"] .milkdown .milkdown-code-block .tok-invalid    { color: #b31d28 !important; text-decoration: underline; }
+
+/* 구문 강조 — One Dark 스타일 (다크 테마) */
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-keyword     { color: #c678dd !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-string      { color: #98c379 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-string2     { color: #98c379 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-number      { color: #d19a66 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-comment     { color: #6b7280 !important; font-style: italic; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-function    { color: #e5c07b !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-operator    { color: #56b6c2 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-punctuation { color: #abb2bf !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-typeName    { color: #e5c07b !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-className   { color: #e5c07b !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-variableName{ color: #e06c75 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-propertyName{ color: #61afef !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-atom        { color: #d19a66 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-bool        { color: #d19a66 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-url         { color: #98c379 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-tag         { color: #e06c75 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-attribute   { color: #d19a66 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-meta        { color: #6b7280 !important; }
+[data-theme="dark"] .milkdown .milkdown-code-block .tok-invalid     { color: #f44747 !important; text-decoration: underline; }
+
+/* ════════════════════════════════════════════════════════════════
+   선택 툴바 (Floating Toolbar) 아이콘 색 통일
+   - Crepe 기본값: 비활성 = --crepe-color-outline (border-strong, 너무 연함)
+                  활성   = --crepe-color-primary  (파란색 accent)
+   - 수정: 비활성 → text-secondary (더 잘 보임)
+           활성   → text-primary   (검정/흰색, 블루 제거)
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── 플로팅 메뉴 공통 — 배경을 surface 변수로 통일 ─────────────
+   (다크 모드에서는 Editor.css 상단의 dark override가 #2e2e34로 밝힘)
+   ─────────────────────────────────────────────────────────────── */
+/* 텍스트 선택 툴바 */
+.milkdown .milkdown-toolbar {
+  background: var(--crepe-color-surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--crepe-shadow-2) !important;
+}
+
+
+/* 코드 블록 언어 선택기 드롭다운 */
+.milkdown [class*="language"] ul,
+.milkdown [class*="language-picker"],
+.milkdown .milkdown-code-block [class*="select"] {
+  background: var(--crepe-color-surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--crepe-shadow-2) !important;
+}
+
+/* 링크 툴팁 — 에디터 내 별도 UI 없음 (툴바 팝업으로 대체) */
+.milkdown [class*="link-tooltip"],
+.milkdown [class*="link-preview"],
+.milkdown .milkdown-link-tooltip {
+  display: none !important;
+}
+
+/* 비활성 아이콘 — text-secondary로 통일 (더 진하게) */
+.milkdown .milkdown-toolbar .toolbar-item svg {
+  color: var(--text-secondary) !important;
+  fill:  var(--text-secondary) !important;
+}
+
+/* 활성(선택된) 아이콘 — 검정/흰색 */
+.milkdown .milkdown-toolbar .toolbar-item.active svg {
+  color: var(--text-primary) !important;
+  fill:  var(--text-primary) !important;
+}
+
+/* 활성 버튼 배경 — 회색 */
+.milkdown .milkdown-toolbar .toolbar-item.active {
+  background: var(--bg-hover) !important;
+  border-radius: 4px;
+}
+
+/* hover 시 비활성 아이콘도 primary로 */
+.milkdown .milkdown-toolbar .toolbar-item:hover svg {
+  color: var(--text-primary) !important;
+  fill:  var(--text-primary) !important;
+}
+
+
+
+
+/* ════════════════════════════════════════════════════════════════
+   블록 선택 하이라이트
+   — 핸들 클릭 / 드래그 시작 시 ProseMirror 가 .ProseMirror-selectednode
+     클래스를 해당 블록 DOM 에 추가한다. 이를 이용해 배경색 표시.
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror-selectednode {
+  background-color: rgba(59, 130, 246, 0.07) !important;
+  border-radius: 4px !important;
+  outline: none !important;
+}
+[data-theme="dark"] .milkdown .ProseMirror-selectednode {
+  background-color: rgba(59, 130, 246, 0.13) !important;
+}
+
+
+/* ════════════════════════════════════════════════════════════════
+   링크 프리뷰 툴팁
+   — 에디터 내 링크 클릭 시 URL을 표시하는 fixed 팝오버
+   ════════════════════════════════════════════════════════════════ */
+.editor-link-preview {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px 5px 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+  z-index: 800;
+  max-width: 360px;
+  font-size: 13px;
+  user-select: none;
+}
+
+.editor-link-preview-url {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--link);
+}
+.editor-link-preview-url-clickable {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.editor-link-preview-url-clickable:hover {
+  color: var(--link-hover);
+}
+
+.editor-link-preview-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 3px 4px;
+  border-radius: 4px;
+  transition: background 0.1s, color 0.1s;
+}
+.editor-link-preview-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.editor-link-preview-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+/* ── URL 대상 범위 decoration (링크 팝업 열린 동안) ── */
+.pm-url-target {
+  color: var(--link);
+  text-decoration: underline dashed var(--link);
+  text-underline-offset: 3px;
+  opacity: 0.75;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   형광펜 (Highlight mark)
+   ════════════════════════════════════════════════════════════════ */
+.milkdown .ProseMirror mark.md-highlight {
+  background: rgba(255, 213, 0, 0.35);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+[data-theme="dark"] .milkdown .ProseMirror mark.md-highlight {
+  background: rgba(255, 213, 0, 0.22);
+}
+

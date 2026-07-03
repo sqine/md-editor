@@ -1,0 +1,369 @@
+/* ── 오버레이 ────────────────────────────────────────────────── */
+#settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+/* ── 모달 ────────────────────────────────────────────────────── */
+#settings-modal {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 680px;
+  max-width: 92vw;
+  height: 540px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+}
+
+/* ── 헤더 ────────────────────────────────────────────────────── */
+#settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+#settings-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#settings-header button:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+/* ── 바디 ────────────────────────────────────────────────────── */
+#settings-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── 사이드 탭 ───────────────────────────────────────────────── */
+#settings-nav {
+  width: 160px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-secondary);
+}
+#settings-nav button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: left;
+  width: 100%;
+  transition: background 0.1s, color 0.1s;
+}
+#settings-nav button:hover  { background: var(--bg-hover);   color: var(--text-primary); }
+#settings-nav button.active { background: var(--bg-active);  color: var(--text-active); font-weight: 500; }
+
+/* ── 콘텐츠 ──────────────────────────────────────────────────── */
+#settings-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
+
+/* ── 탭 컨텐츠 전체 ─────────────────────────────────────────── */
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── 섹션 ────────────────────────────────────────────────────── */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0;
+}
+.desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── 테마 카드 (한 줄) ───────────────────────────────────────── */
+.theme-row {
+  display: flex;
+  flex-direction: row;   /* 핵심: 가로 배치 */
+  gap: 12px;
+}
+.theme-card {
+  position: relative;
+  background: none;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: border-color 0.15s;
+}
+.theme-card:hover  { border-color: var(--border-strong); }
+.theme-card.active { border-color: var(--accent); }
+.theme-card > span {
+  padding: 6px;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+/* ── 테마 미리보기 ───────────────────────────────────────────── */
+.theme-preview {
+  width: 100%;
+  height: 72px;
+  display: flex;
+  flex-direction: column;
+}
+.theme-preview.light { background: #f5f5f5; }
+.theme-preview.dark  { background: #1e1e1e; }
+
+.tp-bar {
+  height: 10px;
+  flex-shrink: 0;
+}
+.theme-preview.light .tp-bar { background: #e8e8e8; }
+.theme-preview.dark  .tp-bar { background: #2a2a2a; }
+
+.tp-body {
+  flex: 1;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tp-line {
+  height: 5px;
+  border-radius: 3px;
+}
+.theme-preview.light .tp-line { background: #ccc; }
+.theme-preview.dark  .tp-line { background: #444; }
+.w80 { width: 80%; }
+.w60 { width: 60%; }
+.w70 { width: 70%; }
+
+/* ── 선택 뱃지 ───────────────────────────────────────────────── */
+.badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── 글씨체 카드 ─────────────────────────────────────────────── */
+.font-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.font-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+.font-card:hover  { background: var(--bg-hover); }
+.font-card.active { border-color: var(--accent); background: var(--bg-active); }
+
+.font-sample {
+  font-size: 14px;
+  color: var(--text-primary);
+  flex: 1;
+}
+.font-name {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: -apple-system, sans-serif;
+  flex-shrink: 0;
+}
+.font-card .badge {
+  position: static;
+  flex-shrink: 0;
+}
+
+/* ── 글꼴 크기 ───────────────────────────────────────────────── */
+.size-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.size-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.size-btn:hover { background: var(--bg-hover); }
+
+.size-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  width: 40px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.size-slider {
+  flex: 1;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.size-reset {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.size-reset:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+/* ── 플러그인 빈 상태 ────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 48px 0;
+  color: var(--text-muted);
+}
+.empty-state span { font-size: 36px; }
+.empty-state p    { margin: 0; font-size: 14px; }
+.empty-state .muted { font-size: 12px; }
+
+/* ── 인코딩 라디오 ───────────────────────────────────────────── */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.radio-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  background: var(--bg-secondary);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.radio-card:hover  { background: var(--bg-hover); }
+.radio-card.active { border-color: var(--accent); background: var(--bg-active); }
+.radio-card input  { accent-color: var(--accent); flex-shrink: 0; }
+.radio-card > div  { display: flex; flex-direction: column; gap: 3px; }
+.rl { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.rd { font-size: 11px; color: var(--text-muted); }
+
+/* ── 토글 스위치 ─────────────────────────────────────────────── */
+.toggle-list { display: flex; flex-direction: column; }
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-row > div      { display: flex; flex-direction: column; gap: 3px; }
+
+.tl { font-size: 13px; color: var(--text-primary); }
+.td { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+.toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--border-strong);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  padding: 0;
+}
+.toggle.on { background: var(--accent); }
+
+.knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  display: block;
+}
+.toggle.on .knob { transform: translateX(18px); }

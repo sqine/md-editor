@@ -1,0 +1,398 @@
+#toolbar {
+  height: var(--toolbar-height);
+  flex-shrink: 0;
+  background: var(--bg-toolbar);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 8px;
+  user-select: none;
+  overflow-x: auto;
+  position: relative; /* tb-dropdown absolute 기준점 */
+}
+
+.tb-btn {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 0 5px;
+  height: 30px;
+  min-width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 13px;
+  white-space: nowrap;
+  transition: background 0.1s, color 0.1s;
+}
+.tb-btn:hover  { background: var(--bg-hover); color: var(--text-primary); border-color: var(--border); }
+.tb-btn:active { background: var(--bg-active); color: var(--accent); }
+
+.tb-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 3px;
+  flex-shrink: 0;
+}
+
+/* ── 비활성 상태 (undo/redo 등) ── */
+.tb-btn-disabled,
+.tb-btn-disabled:hover,
+.tb-btn-disabled:active {
+  opacity: 0.3;
+  cursor: default;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  border-color: transparent !important;
+}
+
+/* ── 활성 상태 ── */
+.tb-btn-active {
+  background: var(--bg-active) !important;
+  color: var(--accent) !important;
+  border-color: var(--border) !important;
+}
+
+/* ── 드롭다운 ── */
+.tb-dropdown-wrap {
+  position: relative;
+}
+
+.tb-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  padding: 4px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+  z-index: 500;
+  min-width: 160px;
+  white-space: nowrap;
+}
+
+.tb-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  padding: 7px 10px;
+  border-radius: 5px;
+  text-align: left;
+  transition: background 0.1s;
+}
+.tb-dropdown-item:hover { background: var(--bg-hover); }
+
+.tb-dropdown-shortcut {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding-left: 12px;
+}
+
+#toolbar-filename {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+/* ── 표 삽입 팝업 ── */
+.tb-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  padding: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 600;
+  min-width: 160px;
+}
+
+.tb-popup-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tb-popup-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.tb-popup-row label {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.tb-popup-input {
+  width: 58px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+}
+.tb-popup-input:focus {
+  border-color: var(--accent);
+}
+
+/* 미리보기 격자 */
+.tb-popup-preview {
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.tb-popup-preview-row {
+  display: flex;
+  gap: 2px;
+}
+.tb-popup-preview-cell {
+  width: 18px;
+  height: 14px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--bg-hover);
+}
+
+.tb-popup-btn {
+  width: 100%;
+  margin-top: 4px;
+  padding: 7px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.1s;
+}
+.tb-popup-btn:hover { opacity: 0.88; }
+
+/* ── 공용 Portal 팝업 베이스 ── */
+.tb-portal-popup {
+  position: fixed;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  padding: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  z-index: 9999;
+  user-select: none;
+}
+
+/* ── 표 삽입 portal 팝업 ── */
+.tb-table-portal {
+  /* tb-portal-popup 상속, 표 전용 오버라이드 없음 */
+}
+
+.tb-table-portal-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 8px;
+  font-variant-numeric: tabular-nums;
+  min-height: 16px;
+}
+
+.tb-table-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tb-table-grid-row {
+  display: flex;
+  gap: 3px;
+}
+
+.tb-table-grid-cell {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-primary);
+  cursor: pointer;
+  transition: background 0.08s, border-color 0.08s;
+}
+
+.tb-table-grid-cell-active {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  border-color: var(--accent);
+}
+
+.tb-table-grid-cell:hover {
+  border-color: var(--accent);
+}
+
+/* 직접 입력 영역 */
+.tb-table-inputs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.tb-table-input {
+  width: 44px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+  /* 스피너 숨김 */
+  -moz-appearance: textfield;
+}
+.tb-table-input::-webkit-outer-spin-button,
+.tb-table-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.tb-table-input:focus { border-color: var(--accent); }
+.tb-table-input::placeholder { color: var(--text-muted); }
+
+.tb-table-inputs-x {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.tb-table-insert-btn {
+  margin-left: auto;
+  padding: 4px 10px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.1s;
+}
+.tb-table-insert-btn:hover { opacity: 0.85; }
+
+/* ── 링크 portal 팝업 ── */
+.tb-link-portal {
+  padding: 12px;
+}
+
+.tb-link-portal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tb-link-portal-icon {
+  font-size: 18px !important;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.tb-link-input-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.tb-link-portal-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 30px 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+}
+.tb-link-portal-input:focus { border-color: var(--accent); }
+.tb-link-portal-input::placeholder { color: var(--text-muted); }
+
+.tb-link-clear {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 2px;
+  border-radius: 3px;
+  line-height: 1;
+}
+.tb-link-clear:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.tb-link-portal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.tb-link-portal-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--accent);
+  color: white;
+  transition: opacity 0.1s;
+}
+.tb-link-portal-btn:hover { opacity: 0.88; }
+
+.tb-link-portal-btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border) !important;
+}
+.tb-link-portal-btn-ghost:hover {
+  opacity: 1;
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
