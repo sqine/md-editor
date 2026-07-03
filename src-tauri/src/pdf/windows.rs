@@ -15,7 +15,8 @@ use webview2_com::Microsoft::Web::WebView2::Win32::{
     ICoreWebView2PrintToPdfCompletedHandler,
     ICoreWebView2PrintToPdfCompletedHandler_Impl,
 };
-use windows::core::{implement, HSTRING, Result as WinResult, BOOL};
+use windows::core::{HSTRING, Result as WinResult, BOOL};
+use windows_core::implement;
 
 type TxSlot = Arc<Mutex<Option<oneshot::Sender<Result<(), String>>>>>;
 
