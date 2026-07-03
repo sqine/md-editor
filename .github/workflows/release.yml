@@ -7,6 +7,10 @@ on:
     tags:
       - "v*"
 
+# Release 생성 권한 필요
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:
@@ -31,7 +35,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       # ── Rust 설정 ─────────────────────────────────────────────────
@@ -45,6 +49,15 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
+
+      # ── Windows: WebView2 설치 확인 ───────────────────────────────
+      - name: Install WebView2 (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $installer = "$env:TEMP\MicrosoftEdgeWebview2Setup.exe"
+          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/p/?LinkId=2124703" -OutFile $installer
+          Start-Process -FilePath $installer -Args "/silent /install" -Wait
 
       # ── 의존성 설치 ───────────────────────────────────────────────
       - name: Install dependencies
@@ -69,6 +82,6 @@ jobs:
 
             ## 변경 사항
             _릴리즈 노트를 여기에 작성하세요._
-          releaseDraft: true      # 먼저 Draft로 생성 → 검토 후 수동 Publish
+          releaseDraft: true
           prerelease: false
           args: --target ${{ matrix.target }}
