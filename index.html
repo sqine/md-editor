@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MD Editor — 심플 마크다운 편집기</title>
+  <meta name="description" content="수식, 형광펜, 코드 하이라이트를 지원하는 심플 마크다운 편집기. macOS · Windows 무료 다운로드." />
+  <meta name="keywords" content="마크다운, 편집기, markdown editor, 수식, KaTeX, 형광펜, PDF 내보내기, macOS, Windows" />
+  <meta name="author" content="sqine" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
+  <link rel="apple-touch-icon" href="icon.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="MD Editor — 심플 마크다운 편집기" />
+  <meta property="og:description" content="수식, 형광펜, 코드 하이라이트를 지원하는 심플 마크다운 편집기. macOS · Windows 무료 다운로드." />
+  <meta property="og:image"       content="icon.png" />
+  <meta property="og:url"         content="https://sqine.github.io/md-editor/" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary" />
+  <meta name="twitter:title"       content="MD Editor — 심플 마크다운 편집기" />
+  <meta name="twitter:description" content="수식, 형광펜, 코드 하이라이트를 지원하는 심플 마크다운 편집기." />
+  <meta name="twitter:image"       content="icon.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0d0d0d;
+      --gray-1:  #f5f5f5;
+      --gray-2:  #e5e5e5;
+      --gray-3:  #a3a3a3;
+      --gray-4:  #525252;
+      --white:   #ffffff;
+      --accent:  #0d0d0d;
+      --radius:  10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      color: var(--black);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── 네비 ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-2);
+      padding: 0 40px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--black);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--gray-4);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--black); }
+
+    /* ── 공통 ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section { padding: 96px 0; }
+
+    /* ── 히어로 ── */
+    #hero {
+      padding: 120px 0 96px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-4);
+      background: var(--gray-1);
+      border: 1px solid var(--gray-2);
+      border-radius: 999px;
+      padding: 4px 14px;
+      margin-bottom: 28px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      color: var(--black);
+      margin-bottom: 20px;
+    }
+    .hero-sub {
+      font-size: 18px;
+      color: var(--gray-4);
+      max-width: 480px;
+      margin: 0 auto 48px;
+      line-height: 1.65;
+    }
+    .download-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 24px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn:hover  { opacity: 0.85; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: var(--black);
+      color: var(--white);
+    }
+    .btn-secondary {
+      background: var(--gray-1);
+      color: var(--black);
+      border: 1px solid var(--gray-2);
+    }
+    .btn svg { flex-shrink: 0; }
+
+    .download-note {
+      margin-top: 14px;
+      font-size: 12.5px;
+      color: var(--gray-3);
+    }
+
+    /* ── 스크린샷 ── */
+    .screenshot-wrap {
+      margin-top: 72px;
+      border-radius: 14px;
+      border: 1px solid var(--gray-2);
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.08);
+      background: var(--gray-1);
+      aspect-ratio: 16 / 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .screenshot-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .screenshot-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      color: var(--gray-3);
+      font-size: 13px;
+    }
+    .screenshot-placeholder svg { opacity: 0.4; }
+
+    /* ── 기능 ── */
+    #features { background: var(--gray-1); }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-3);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      margin-bottom: 56px;
+      color: var(--black);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2px;
+    }
+    .feature-card {
+      background: var(--white);
+      padding: 32px 28px;
+      border-radius: 2px;
+    }
+    .feature-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gray-1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      font-size: 20px;
+    }
+    .feature-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+    .feature-card p {
+      font-size: 13.5px;
+      color: var(--gray-4);
+      line-height: 1.6;
+    }
+    .feature-syntax {
+      display: inline-block;
+      margin-top: 10px;
+      font-family: "SFMono-Regular", "Consolas", monospace;
+      font-size: 12px;
+      background: var(--gray-1);
+      color: var(--gray-4);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* ── 다운로드 ── */
+    #download { text-align: center; }
+    #download .section-title { margin-bottom: 16px; }
+    #download .section-sub {
+      font-size: 16px;
+      color: var(--gray-4);
+      margin-bottom: 48px;
+    }
+    .platform-cards {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .platform-card {
+      background: var(--gray-1);
+      border: 1px solid var(--gray-2);
+      border-radius: var(--radius);
+      padding: 28px 36px;
+      min-width: 200px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--black);
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .platform-card:hover {
+      border-color: var(--black);
+      transform: translateY(-2px);
+    }
+    .platform-card .platform-icon { font-size: 32px; margin-bottom: 10px; }
+    .platform-card .platform-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .platform-card .platform-info { font-size: 12px; color: var(--gray-3); }
+
+    /* ── 푸터 ── */
+    footer {
+      border-top: 1px solid var(--gray-2);
+      padding: 32px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    footer .footer-logo { font-size: 14px; font-weight: 700; }
+    footer .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+    footer .footer-links a {
+      font-size: 13px;
+      color: var(--gray-3);
+      text-decoration: none;
+    }
+    footer .footer-links a:hover { color: var(--black); }
+    footer .footer-copy { font-size: 12px; color: var(--gray-3); }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 20px; }
+      section { padding: 72px 0; }
+      #hero { padding: 80px 0 64px; }
+      footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── 네비 ─────────────────────────────────────────────── -->
+<nav>
+  <a href="#" class="nav-logo">MD Editor</a>
+  <ul class="nav-links">
+    <li><a href="#features">기능</a></li>
+    <li><a href="#download">다운로드</a></li>
+    <li><a href="https://github.com/sqine/md-editor" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<!-- ── 히어로 ────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-badge">무료 · 오픈소스</div>
+    <h1>마크다운,<br>그냥 쓰면 됩니다.</h1>
+    <p class="hero-sub">수식, 형광펜, 코드 하이라이트까지. 복잡한 설정 없이 바로 시작하는 심플 마크다운 편집기.</p>
+
+    <div class="download-group">
+      <a href="#download" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v8m0 0L5 7m3 3 3-3M2 12h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        무료 다운로드
+      </a>
+      <a href="https://github.com/sqine/md-editor" target="_blank" class="btn btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+    <p class="download-note">macOS · Windows 지원 · v0.1.0</p>
+
+    <!-- 스크린샷 자리 -->
+    <div class="screenshot-wrap">
+      <!-- 스크린샷 이미지 추가 시: <img src="screenshot.png" alt="MD Editor 스크린샷" /> -->
+      <div class="screenshot-placeholder">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span>스크린샷 준비 중</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 기능 ─────────────────────────────────────────────── -->
+<section id="features">
+  <div class="container">
+    <p class="section-label">Features</p>
+    <h2 class="section-title">필요한 것만,<br>군더더기 없이.</h2>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">✏️</div>
+        <h3>실시간 마크다운</h3>
+        <p>입력하는 즉시 서식이 적용됩니다. 별도의 미리보기 창 없이 깔끔하게.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔢</div>
+        <h3>수식 지원</h3>
+        <p>KaTeX 기반 수식 렌더링. 인라인과 블록 수식 모두 지원합니다.</p>
+        <span class="feature-syntax">$E = mc^2$</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🖊️</div>
+        <h3>형광펜</h3>
+        <p>중요한 부분을 강조하세요. PDF 내보내기에도 그대로 반영됩니다.</p>
+        <span class="feature-syntax">==강조 텍스트==</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💻</div>
+        <h3>코드 하이라이트</h3>
+        <p>100개 이상의 언어를 지원하는 구문 강조. 에디터와 PDF 모두 적용.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <h3>PDF 내보내기</h3>
+        <p>수식, 형광펜, 코드 블록이 모두 포함된 A4 PDF를 한 번에 내보냅니다.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌙</div>
+        <h3>다크 모드</h3>
+        <p>라이트 · 다크 테마 선택. 설정은 앱을 껐다 켜도 유지됩니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 다운로드 ───────────────────────────────────────────── -->
+<section id="download">
+  <div class="container">
+    <p class="section-label">Download</p>
+    <h2 class="section-title">지금 바로 시작하세요.</h2>
+    <p class="section-sub">무료입니다. 설치하고 바로 쓰면 됩니다.</p>
+
+    <div class="platform-cards">
+      <a href="https://github.com/sqine/md-editor/releases/download/untagged-d0273047e59fd5782773/MD.Editor_0.1.0_aarch64.dmg" class="platform-card">
+        <div class="platform-icon">🍎</div>
+        <div class="platform-name">macOS</div>
+        <div class="platform-info">Apple Silicon · .dmg</div>
+      </a>
+      <a href="https://github.com/sqine/md-editor/releases/download/untagged-d0273047e59fd5782773/MD.Editor_0.1.0_x64-setup.exe" class="platform-card">
+        <div class="platform-icon">🪟</div>
+        <div class="platform-name">Windows</div>
+        <div class="platform-info">x64 · .exe</div>
+      </a>
+    </div>
+
+    <p class="download-note" style="margin-bottom:10px;">최신 버전: v0.1.0 · <a href="https://github.com/sqine/md-editor/releases" style="color:inherit">릴리즈 노트 →</a></p>
+
+    <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">
+      <a href="https://github.com/sqine/md-editor/releases/download/untagged-d0273047e59fd5782773/MD.Editor_0.1.0_x64_en-US.msi"
+         style="font-size:12.5px;color:var(--gray-3);text-decoration:none;border-bottom:1px solid var(--gray-2);">Windows .msi</a>
+      <a href="https://github.com/sqine/md-editor/releases/download/untagged-d0273047e59fd5782773/MD.Editor_aarch64.app.tar.gz"
+         style="font-size:12.5px;color:var(--gray-3);text-decoration:none;border-bottom:1px solid var(--gray-2);">macOS .app.tar.gz</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── 푸터 ─────────────────────────────────────────────── -->
+<footer>
+  <span class="footer-logo">MD Editor</span>
+  <ul class="footer-links">
+    <li><a href="https://github.com/sqine/md-editor" target="_blank">GitHub</a></li>
+    <li><a href="https://github.com/sqine/md-editor/releases" target="_blank">릴리즈</a></li>
+  </ul>
+  <span class="footer-copy">© 2025 sqine. MIT License.</span>
+</footer>
+
+</body>
+</html>
