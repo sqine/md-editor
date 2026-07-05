@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useApp, activeTab } from "../../shared/store/appStore";
 import { useFile } from "../../features/file/useFile";
 import { useToast } from "../../shared/ui/Toast";
+import { allowNextClose } from "../../features/file/useCloseHandler";
 import "./CloseDialog.css";
 
 export default function CloseDialog() {
@@ -20,7 +21,13 @@ export default function CloseDialog() {
   const multiDirty = dirtyTabs.length > 1;
 
   const close = () => dispatch({ type: "SET_CLOSE_DIALOG", open: false });
-  const quit  = () => getCurrentWindow().close();
+
+  /** onCloseRequested 재진입 방지 후 창 닫기 */
+  const quit = () => {
+    allowNextClose();
+    dispatch({ type: "SET_CLOSE_DIALOG", open: false });
+    getCurrentWindow().close();
+  };
 
   /** 단일 탭: 저장 후 종료 */
   const handleSaveAndQuit = async () => {
@@ -69,6 +76,7 @@ export default function CloseDialog() {
     return (
       <div className="cd-overlay">
         <div className="cd-modal">
+          <button className="cd-close-btn" onClick={() => { setTempPath(null); close(); }} aria-label="닫기">✕</button>
           <div className="cd-icon">💾</div>
           <h2 className="cd-title">임시 파일로 저장됨</h2>
           <p className="cd-desc">나중에 아래 경로에서 복구할 수 있습니다.</p>
@@ -87,6 +95,7 @@ export default function CloseDialog() {
   return (
     <div className="cd-overlay">
       <div className="cd-modal">
+        <button className="cd-close-btn" onClick={close} disabled={busy} aria-label="닫기">✕</button>
         <div className="cd-icon">⚠️</div>
         <h2 className="cd-title">저장하지 않은 변경 사항</h2>
 

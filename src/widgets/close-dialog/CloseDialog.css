@@ -10,6 +10,7 @@
 }
 
 .cd-modal {
+  position: relative;
   background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -21,6 +22,30 @@
   align-items: center;
   gap: 10px;
 }
+
+.cd-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s;
+}
+.cd-close-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.cd-close-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .cd-icon { font-size: 36px; line-height: 1; }
 

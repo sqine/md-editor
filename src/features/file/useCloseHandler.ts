@@ -2,6 +2,10 @@ import { useEffect, useRef } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useApp } from "../../shared/store/appStore";
 
+// CloseDialog에서 quit() 호출 시 onCloseRequested 재진입 방지용 플래그
+let _skipNext = false;
+export function allowNextClose() { _skipNext = true; }
+
 /**
  * 앱 종료 요청을 가로채서:
  * - 미저장 탭 없음 → 바로 종료
@@ -19,6 +23,11 @@ export function useCloseHandler() {
     let unlisten: (() => void) | undefined;
 
     getCurrentWindow().onCloseRequested(async (event) => {
+      // CloseDialog의 quit()가 호출한 close() → 그냥 통과
+      if (_skipNext) {
+        _skipNext = false;
+        return;
+      }
       if (anyDirtyRef.current) {
         event.preventDefault();
         dispatch({ type: "SET_CLOSE_DIALOG", open: true });
